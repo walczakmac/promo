@@ -23,9 +23,30 @@ services:
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
-    App\Controller\:
-        resource: '../src/Controller/'
+    App\UserInterface\Controller\:
+        resource: '../src/UserInterface/Controller/'
         tags: ['controller.service_arguments']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    guzzle_client.promoproductapi:
+        class: GuzzleHttp\Client
+        arguments:
+            - { 'base_uri': '%env(PROMO_PRODUCT_API_URL)%' }
+
+    App\Infrastructure\PromoProductApi\Client:
+        arguments:
+            - '@guzzle_client.promoproductapi'
+            - '%env(PROMO_PRODUCT_API_TOKEN)%'
+            - '@logger'
+
+    App\Infrastructure\PromoProductApi: '@App\Infrastructure\PromoProductApi\Client'
+
+    App\Infrastructure\EventListener\TokenAuthenticatorSubscriber:
+        arguments:
+            - '%env(AUTH_TOKEN)%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    App\Infrastructure\Repository\ProductRepository: '@App\Infrastructure\Repository\Doctrine\Products'

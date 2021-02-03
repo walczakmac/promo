@@ -1,0 +1,14 @@
+doctrine_mongodb:
+  connections:
+    default:
+      server: "%env(MONGO_DB_URL)%"
+      options: {}
+  default_database: "%env(MONGO_DB_DATABASE)%"
+  document_managers:
+    default:
+      mappings:
+        promo:
+          type: annotation
+          prefix: App\Domain
+          dir: "%kernel.project_dir%/src/Domain/"
+          is_bundle: false
